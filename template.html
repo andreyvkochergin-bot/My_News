@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Сводка">
+<meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141413" media="(prefers-color-scheme: dark)">
+<title>Утренняя сводка · {{DATE_SHORT}}</title>
+<!--
+  Это шаблон-черновик. Скрипт morning_news.py каждое утро подставляет
+  новости вместо меток {{...}} и публикует результат на сайт.
+  Дизайн (CSS ниже) можно менять как угодно — метки только не удаляй.
+-->
+<style>
+  :root {
+    --bg: #f6f4ef;
+    --paper: #ffffff;
+    --ink: #1b1b1b;
+    --muted: #6b6860;
+    --line: #e4e0d6;
+    --chip: #f1eee7;
+    --world: #2f5bd3;
+    --ru: #c4372f;
+    --up: #1f8a4c;
+    --down: #c4372f;
+    --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.04);
+    --serif: "New York", "Iowan Old Style", Georgia, "Times New Roman", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141413;
+      --paper: #1d1d1b;
+      --ink: #ecebe6;
+      --muted: #9a978e;
+      --line: #2e2d2a;
+      --chip: #2a2926;
+      --world: #7d9bff;
+      --ru: #ff7a70;
+      --up: #4cc38a;
+      --down: #ff7a70;
+      --shadow: none;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- шапка ---------- */
+  .masthead { padding-top: 48px; padding-bottom: 0; }
+  .masthead::after { content: ""; display: block; border-bottom: 2px solid var(--ink); margin-top: 20px; }
+  .masthead .kicker {
+    font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
+  }
+  .masthead h1 {
+    font-family: var(--serif); font-weight: 700;
+    font-size: clamp(36px, 6vw, 60px); line-height: 1.05; margin: 6px 0 10px;
+  }
+  .masthead .updated { font-size: 14px; color: var(--muted); }
+
+  /* ---------- курсы ---------- */
+  .tickers {
+    display: flex; flex-wrap: wrap; gap: 8px 28px;
+    padding-top: 14px; padding-bottom: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  .ticker { display: flex; align-items: baseline; gap: 8px; font-size: 15px; }
+  .ticker .t-name { color: var(--muted); font-size: 13px; letter-spacing: .04em; }
+  .ticker .t-val { font-weight: 600; }
+  .ticker .t-chg { font-size: 13px; }
+  .ticker .up { color: var(--up); }
+  .ticker .down { color: var(--down); }
+
+  /* ---------- навигация ---------- */
+  nav.sections {
+    position: sticky; top: 0; z-index: 5;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  nav.sections .wrap { display: flex; gap: 6px; overflow-x: auto; padding-top: 10px; padding-bottom: 10px; }
+  nav.sections a {
+    color: var(--ink); text-decoration: none; white-space: nowrap;
+    padding: 6px 14px; border-radius: 999px; font-size: 14px; font-weight: 500;
+    background: var(--chip);
+  }
+  nav.sections a:hover { background: var(--line); }
+  nav.sections a .n { color: var(--muted); font-weight: 400; margin-left: 4px; }
+
+  /* ---------- коротко ---------- */
+  .brief {
+    margin: 32px 0 8px; padding: 22px 26px;
+    background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
+    box-shadow: var(--shadow);
+  }
+  .brief h2 {
+    margin: 0 0 10px; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
+  }
+  .brief ol { margin: 0; padding-left: 22px; }
+  .brief li { margin: 6px 0; font-family: var(--serif); font-size: 18px; line-height: 1.45; }
+
+  .notice {
+    margin: 24px 0 0; padding: 12px 16px; border-radius: 10px;
+    background: color-mix(in srgb, var(--ru) 12%, transparent); font-size: 14px;
+  }
+
+  /* ---------- секции ---------- */
+  section.section { padding: 40px 0 8px; scroll-margin-top: 56px; }
+  .section-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+    border-bottom: 1px solid var(--ink); padding-bottom: 8px; margin-bottom: 20px;
+  }
+  .section-head h2 { font-family: var(--serif); font-size: 32px; margin: 0; }
+  .section-head .sub { color: var(--muted); font-size: 14px; }
+
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+
+  .card {
+    background: var(--paper); border: 1px solid var(--line); border-radius: 14px;
+    padding: 18px 20px 16px; box-shadow: var(--shadow);
+    display: flex; flex-direction: column;
+  }
+  .card.lead { grid-column: 1 / -1; padding: 24px 26px 20px; }
+  .card h3 {
+    font-family: var(--serif); font-size: 20px; line-height: 1.3; margin: 8px 0 8px;
+  }
+  .card.lead h3 { font-size: 27px; }
+  .card p { margin: 0 0 14px; color: var(--ink); opacity: .88; }
+  .card.lead p { font-size: 17px; }
+
+  .badge {
+    display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: .08em;
+    text-transform: uppercase; padding: 2px 8px; border-radius: 5px;
+  }
+  .badge.world { color: var(--world); background: color-mix(in srgb, var(--world) 12%, transparent); }
+  .badge.ru    { color: var(--ru);    background: color-mix(in srgb, var(--ru) 12%, transparent); }
+
+  .sources { margin-top: auto; display: flex; flex-wrap: wrap; gap: 6px; }
+  .sources a {
+    font-size: 13px; color: var(--muted); text-decoration: none;
+    padding: 3px 10px; border-radius: 999px; background: var(--chip);
+  }
+  .sources a:hover { color: var(--ink); background: var(--line); }
+
+  .empty { color: var(--muted); font-style: italic; }
+
+  /* ---------- подвал ---------- */
+  footer { margin: 48px 0 40px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+  footer p { margin: 4px 0; }
+</style>
+</head>
+<body>
+
+<header class="wrap masthead">
+  <div class="kicker">Утренняя сводка</div>
+  <h1>{{DATE_LONG}}</h1>
+  <div class="updated">{{UPDATED}}</div>
+</header>
+
+<div class="wrap tickers">
+{{TICKERS}}
+</div>
+
+<nav class="sections"><div class="wrap">
+{{NAV}}
+</div></nav>
+
+<main class="wrap">
+{{NOTICE}}
+{{BRIEF}}
+{{SECTIONS}}
+</main>
+
+<footer class="wrap">
+{{FOOTER}}
+</footer>
+
+</body>
+</html>

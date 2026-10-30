@@ -1,0 +1,73 @@
+# Каждое утро собирает сводку на серверах GitHub и публикует её на GitHub Pages.
+name: Утренняя сводка
+
+on:
+  schedule:
+    # Время указано по Гринвичу (UTC): 04:30 UTC = 07:30 по Москве.
+    # GitHub часто запускает задачи с опозданием на 10–40 минут,
+    # поэтому ставим чуть раньше, чтобы к 8:00 сводка уже была готова.
+    - cron: "30 4 * * *"
+  workflow_dispatch: # кнопка «Run workflow» — собрать вручную в любой момент
+
+permissions:
+  contents: write # нужно только для ежемесячного «пинга», см. последний шаг
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      TZ: Europe/Moscow # дата и время на странице — московские
+
+    steps:
+      - name: Забрать файлы репозитория
+        uses: actions/checkout@v4
+
+      - name: Установить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Установить Claude Code
+        run: |
+          curl -fsSL https://claude.ai/install.sh | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Собрать сводку
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          NEWS_OUTPUT: site/index.html
+        run: python morning_news.py --no-open
+
+      - name: Подготовить сайт
+        uses: actions/configure-pages@v5
+
+      - name: Загрузить страницу
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Опубликовать
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Не дать GitHub отключить расписание
+        # GitHub выключает расписание, если в репозитории 60 дней не было изменений.
+        # Поэтому 1-го числа каждого месяца делаем пустой коммит.
+        if: github.event_name == 'schedule'
+        run: |
+          if [ "$(date +%d)" = "01" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898732+github-actions[bot]@users.noreply.github.com"
+            git commit --allow-empty -m "keepalive"
+            git push
+          fi

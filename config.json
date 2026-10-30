@@ -1,0 +1,62 @@
+{
+  "settings": {
+    "model": "sonnet",
+    "hours_back": 26,
+    "max_items_per_feed": 30,
+    "open_after_build": false,
+    "claude_path": "",
+    "top": { "world": 8, "russia": 8, "auto": 6, "invest": 7 }
+  },
+
+  "sections": {
+    "world":  { "title": "Мир",        "subtitle": "Главное в мире за сутки" },
+    "russia": { "title": "Россия",     "subtitle": "Главное в стране за сутки" },
+    "auto":   { "title": "Авто",       "subtitle": "Индустрия, новинки, рынок" },
+    "invest": { "title": "Инвестиции", "subtitle": "Рынки, компании, ставки" }
+  },
+
+  "feeds": [
+    { "section": "world",  "region": "world", "name": "BBC",              "url": "http://feeds.bbci.co.uk/news/world/rss.xml" },
+    { "section": "world",  "region": "world", "name": "The Guardian",     "url": "https://www.theguardian.com/world/rss" },
+    { "section": "world",  "region": "world", "name": "NYT",              "url": "https://rss.nytimes.com/services/xml/rss/nyt/World.xml" },
+    { "section": "world",  "region": "world", "name": "Al Jazeera",       "url": "https://www.aljazeera.com/xml/rss/all.xml" },
+    { "section": "world",  "region": "world", "name": "DW",               "url": "https://rss.dw.com/rdf/rss-en-world" },
+    { "section": "world",  "region": "world", "name": "NPR",              "url": "https://feeds.npr.org/1004/rss.xml" },
+    { "section": "world",  "region": "ru",    "name": "Би-би-си",         "url": "https://feeds.bbci.co.uk/russian/rss.xml" },
+
+    { "section": "russia", "region": "ru",    "name": "РБК",              "url": "https://rssexport.rbc.ru/rbcnews/news/30/full.rss" },
+    { "section": "russia", "region": "ru",    "name": "Интерфакс",        "url": "https://www.interfax.ru/rss.asp" },
+    { "section": "russia", "region": "ru",    "name": "Коммерсантъ",      "url": "https://www.kommersant.ru/RSS/news.xml" },
+    { "section": "russia", "region": "ru",    "name": "ТАСС",             "url": "https://tass.ru/rss/v2.xml" },
+    { "section": "russia", "region": "ru",    "name": "РИА Новости",      "url": "https://ria.ru/export/rss2/archive/index.xml" },
+    { "section": "russia", "region": "ru",    "name": "Ведомости",        "url": "https://www.vedomosti.ru/rss/news" },
+    { "section": "russia", "region": "ru",    "name": "Лента.ру",         "url": "https://lenta.ru/rss/news" },
+    { "section": "russia", "region": "ru",    "name": "Медуза",           "url": "https://meduza.io/rss/all" },
+    { "section": "russia", "region": "world", "name": "The Moscow Times", "url": "https://www.themoscowtimes.com/rss/news" },
+
+    { "section": "auto",   "region": "world", "name": "Motor1",           "url": "https://www.motor1.com/rss/news/all/" },
+    { "section": "auto",   "region": "world", "name": "Autocar",          "url": "https://www.autocar.co.uk/rss" },
+    { "section": "auto",   "region": "world", "name": "Car and Driver",   "url": "https://www.caranddriver.com/rss/all.xml/" },
+    { "section": "auto",   "region": "world", "name": "Carscoops",        "url": "https://www.carscoops.com/feed/" },
+    { "section": "auto",   "region": "world", "name": "InsideEVs",        "url": "https://insideevs.com/rss/news/all/" },
+    { "section": "auto",   "region": "world", "name": "Electrek",         "url": "https://electrek.co/feed/" },
+    { "section": "auto",   "region": "ru",    "name": "Колёса.ру",        "url": "https://www.kolesa.ru/rss" },
+    { "section": "auto",   "region": "ru",    "name": "Автостат",         "url": "https://www.autostat.ru/rss/" },
+    { "section": "auto",   "region": "ru",    "name": "Autonews.ru",      "url": "https://www.autonews.ru/rss/" },
+    { "section": "auto",   "region": "ru",    "name": "Motor.ru",         "url": "https://motor.ru/export/rss/main.xml" },
+
+    { "section": "invest", "region": "world", "name": "CNBC",             "url": "https://www.cnbc.com/id/100003114/device/rss/rss.html" },
+    { "section": "invest", "region": "world", "name": "CNBC Investing",   "url": "https://www.cnbc.com/id/15839069/device/rss/rss.html" },
+    { "section": "invest", "region": "world", "name": "MarketWatch",      "url": "https://feeds.content.dowjones.io/public/rss/mw_topstories" },
+    { "section": "invest", "region": "world", "name": "WSJ Markets",      "url": "https://feeds.a.dj.com/rss/RSSMarketsMain.xml" },
+    { "section": "invest", "region": "world", "name": "Financial Times",  "url": "https://www.ft.com/markets?format=rss" },
+    { "section": "invest", "region": "world", "name": "Investing.com",    "url": "https://www.investing.com/rss/news.rss" },
+    { "section": "invest", "region": "ru",    "name": "Финам",            "url": "https://www.finam.ru/analysis/conews/rsspoint/" },
+    { "section": "invest", "region": "ru",    "name": "Frank Media",      "url": "https://frankmedia.ru/feed" },
+    { "section": "invest", "region": "ru",    "name": "Investing.com РФ", "url": "https://ru.investing.com/rss/news.rss" },
+    { "section": "invest", "region": "ru",    "name": "Smart-Lab",        "url": "https://smart-lab.ru/rss/" },
+    { "section": "invest", "region": "ru",    "name": "Банки.ру",         "url": "https://www.banki.ru/xml/news.rss" },
+    { "section": "invest", "region": "ru",    "name": "РБК Инвестиции",   "url": "https://rssexport.rbc.ru/rbcnews/news/20/full.rss" },
+    { "section": "invest", "region": "ru",    "name": "Ведомости Финансы","url": "https://www.vedomosti.ru/rss/rubric/finance" }
+  ]
+}
